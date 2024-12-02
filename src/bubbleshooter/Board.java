@@ -14,7 +14,7 @@ public class Board extends JPanel {
 
     private Bubble bubble;
     private Color bubbleColor;
-    private int bubbleDiameter = 30;
+    private final int bubbleDiameter = 30;
     private int bubbleX;
     private int bubbleY;
 
@@ -30,14 +30,13 @@ public class Board extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.setColor(bubbleColor); 
+        g.setColor(bubbleColor);
         g.fillOval(bubbleX, bubbleY, bubbleDiameter, bubbleDiameter);
     }
 
     private Color getRandomRainbowColor() {
         Color[] rainbowColors = {
-            Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN,
-            Color.BLUE, new Color(75, 0, 130), new Color(143, 0, 255)
+            new Color(222, 214, 193), Color.BLUE, Color.ORANGE, Color.RED
         };
         Random random = new Random();
         return rainbowColors[random.nextInt(rainbowColors.length)];
