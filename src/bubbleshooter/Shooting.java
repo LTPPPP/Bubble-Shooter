@@ -10,5 +10,5 @@ package bubbleshooter;
  * @author Gigabyte
  */
 public class Shooting {
-    
+
 }
