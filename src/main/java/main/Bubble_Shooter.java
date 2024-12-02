@@ -1,14 +1,17 @@
+package main;
+
+
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Project/Maven2/JavaApp/src/main/java/${packagePath}/${mainClassName}.java to edit this template
  */
 
-package main;
+
 
 /**
  *
- * @author Lam Tan Phat
- * @author Nguyen Kim Bao Nguyen
+ * @author Lam Tan Phat - CE181023
  */
 public class Bubble_Shooter {
 
