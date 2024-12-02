@@ -12,13 +12,6 @@ This is the main class for the Bubble Shooter game. It sets up the main window (
 
 ## Features
 
-- Creates the main game window with a title "Bubble Shooter".
-- Sets the default close operation to exit the application when the window is closed.
-- Sets the size of the window to 600x800 pixels.
-- Uses BorderLayout for the layout manager.
-- Sets the background color of the window to light gray.
-- Centers the window on the screen.
-- Makes the window visible.
 
 ## Usage
 
