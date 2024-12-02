@@ -1,25 +1,26 @@
 package bubbleshooter;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.*;
 import javax.swing.*;
 
 public class BubbleShooter {
+    
+    public static final int WIDTH_BOARD = 600;
+    public static final int HEIGHT_BOARD = 800 ;
 
     public static void main(String[] args) {
-        // Tạo khung chính (JFrame)
+        // Create the main frame
         JFrame frame = new JFrame("Bubble Shooter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 800);
+        frame.setSize(WIDTH_BOARD, HEIGHT_BOARD);
         frame.setLayout(new BorderLayout());
 
-        // Đặt màu nền của khung chính
-        frame.getContentPane().setBackground(Color.LIGHT_GRAY); // You can choose any color you like
+        // Create and add the Board panel
+        Board board = new Board();
+        frame.add(board, BorderLayout.CENTER);
 
-        // Đặt vị trí của khung chính ở giữa màn hình
+        // Set frame properties
         frame.setLocationRelativeTo(null);
-
-        // Hiển thị cửa sổ
         frame.setVisible(true);
     }
 }
