@@ -1,5 +1,7 @@
 package bubbleshooter;
 
+import java.util.List;
+
 public class Shooting {
 
     private Bubble bubble;
@@ -32,7 +34,7 @@ public class Shooting {
         this.speedY = 0;
     }
 
-    public boolean updatePosition(int panelWidth, int panelHeight, int bubbleDiameter) {
+    public boolean updatePosition(int panelWidth, int panelHeight, int bubbleDiameter, List<Bubble> bubbles) {
         if (isShooting) {
             bubble.setxBub((int) (bubble.getxBub() + speedX));
             bubble.setyBub((int) (bubble.getyBub() + speedY));
@@ -41,12 +43,26 @@ public class Shooting {
                 speedX = -speedX; // Đổi hướng X
             }
 
-            if (bubble.getyBub() <= 0 || bubble.getyBub() + bubbleDiameter >= panelHeight) {
+            if (bubble.getyBub() <= 0) {
                 stopShooting();
                 return true;
             }
+
+            for (Bubble other : bubbles) {
+                if (isColliding(bubble, other, bubbleDiameter)) {
+                    stopShooting();
+                    return true;
+                }
+            }
         }
-        return false; // Không cần tạo bóng mới
+        return false; 
+    }
+
+    private boolean isColliding(Bubble b1, Bubble b2, int diameter) {
+        int dx = b1.getxBub() - b2.getxBub();
+        int dy = b1.getyBub() - b2.getyBub();
+        float distance =(float) Math.sqrt((dx*dx)+(dy*dy)) ;
+        return distance <= diameter*2  ;
     }
 
     public boolean isShooting() {

@@ -30,17 +30,17 @@ public class Board extends JPanel implements MouseListener, Runnable {
         Thread gameThread = new Thread(this);
         gameThread.start();
     }
-    
+
     private void createBubbleRows() {
-        int rows = 5; 
+        int rows = 5;
         for (int row = 0; row < rows; row++) {
             int offsetX = (row % 2 == 0) ? 0 : bubbleDiameter / 2; // Dịch ngang hàng lẻ
-            for (int col = 0; col < WIDTH_BOARD  / bubbleDiameter -2; col++) {
+            for (int col = 0; col < WIDTH_BOARD / bubbleDiameter - 2; col++) {
                 int x = col * bubbleDiameter + offsetX;
                 int y = row * bubbleDiameter;
-                Bubble bubble = new Bubble(x+15, y, null);
+                Bubble bubble = new Bubble(x + 15, y, null);
                 bubble.setRandomColor();
-                bubbles.add(bubble); 
+                bubbles.add(bubble);
             }
         }
     }
@@ -52,7 +52,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
         // Vẽ bóng
         g.setColor(bubbleShoot.getColorBubbles());
         g.fillOval(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleDiameter, bubbleDiameter);
-        
+
         for (Bubble bubble : bubbles) {
             g.setColor(bubble.getColorBubbles());
             g.fillOval(bubble.getxBub(), bubble.getyBub(), bubbleDiameter, bubbleDiameter);
@@ -95,8 +95,10 @@ public class Board extends JPanel implements MouseListener, Runnable {
     public void run() {
         while (true) {
             if (shooting.isShooting()) {
-                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter);
+                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter/2, bubbles);
                 if (createNewBubble) {
+                    bubbles.add(new Bubble(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleShoot.getColorBubbles()));
+
                     bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
                     bubbleShoot.setRandomColor();
                     shooting = new Shooting(bubbleShoot);
@@ -110,4 +112,5 @@ public class Board extends JPanel implements MouseListener, Runnable {
             }
         }
     }
+
 }
