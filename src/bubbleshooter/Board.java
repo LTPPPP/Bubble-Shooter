@@ -13,6 +13,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
 
     private Bubble bubbleShoot;
     private final int bubbleDiameter = 30;
+    private final int bubbleSpacing = 2;
     private Shooting shooting;
     private List<Bubble> bubbles;
     public static int ROW_ADD_INTERVAL = 0; // Thời gian tạo hàng mới (5 giây)
@@ -35,10 +36,10 @@ public class Board extends JPanel implements MouseListener, Runnable {
     private void createBubbleRows() {
         int rows = 5;
         for (int row = 0; row < rows; row++) {
-            int offsetX = (row % 2 == 0) ? 0 : bubbleDiameter / 2; // Dịch ngang hàng lẻ
-            for (int col = 0; col < WIDTH_BOARD / bubbleDiameter - 2; col++) {
-                int x = col * bubbleDiameter + offsetX;
-                int y = row * bubbleDiameter;
+            int offsetX = (row % 2 == 0) ? 0 : (bubbleDiameter + bubbleSpacing) / 2; // Dịch ngang hàng lẻ
+            for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
+                int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
+                int y = row * (bubbleDiameter + bubbleSpacing);
                 Bubble bubble = new Bubble(x + 15, y, null);
                 bubble.setRandomColor();
                 bubbles.add(bubble);
@@ -47,14 +48,18 @@ public class Board extends JPanel implements MouseListener, Runnable {
     }
 
     private void addNewRow() {
-        int offsetX = (bubbles.size() / (WIDTH_BOARD / bubbleDiameter - 2)) % 2 == 0 ? 0 : bubbleDiameter / 2;
+        int offsetX = (bubbles.size() / (WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2)) % 2 == 0
+                ? 0
+                : (bubbleDiameter + bubbleSpacing) / 2;
 
+        // Dời các bóng hiện tại xuống
         for (Bubble bubble : bubbles) {
-            bubble.setyBub(bubble.getyBub() + bubbleDiameter);
+            bubble.setyBub(bubble.getyBub() + bubbleDiameter + bubbleSpacing);
         }
 
-        for (int col = 0; col < WIDTH_BOARD / bubbleDiameter - 2; col++) {
-            int x = col * bubbleDiameter + offsetX;
+        // Tạo hàng mới
+        for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
+            int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
             int y = 0;
             Bubble bubble = new Bubble(x + 15, y, null);
             bubble.setRandomColor();
@@ -113,7 +118,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
 
         while (true) {
             if (shooting.isShooting()) {
-                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter, bubbles);
+                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter + 2, bubbles);
                 if (createNewBubble) {
                     bubbles.add(new Bubble(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleShoot.getColorBubbles()));
 

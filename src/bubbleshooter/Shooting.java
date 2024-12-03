@@ -34,6 +34,30 @@ public class Shooting {
         this.speedY = 0;
     }
 
+    private void adjustPositionAfterCollision(Bubble b1, List<Bubble> others, int diameter) {
+        int radius = diameter / 2;
+        double requiredDistance = 2 * radius + 2; // Khoảng cách tối thiểu
+
+        for (Bubble b2 : others) {
+            if (b1 == b2) {
+                continue; // Bỏ qua chính nó
+            }
+            int dx = b2.getxBub() - b1.getxBub();
+            int dy = b2.getyBub() - b1.getyBub();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < requiredDistance) {
+                double overlap = requiredDistance - distance;
+                double adjustmentX = (dx / distance) * overlap;
+                double adjustmentY = (dy / distance) * overlap;
+
+                // Chỉ di chuyển bubble hiện tại
+                b1.setxBub((int) (b1.getxBub() - adjustmentX));
+                b1.setyBub((int) (b1.getyBub() - adjustmentY));
+            }
+        }
+    }
+
     public boolean updatePosition(int panelWidth, int panelHeight, int bubbleDiameter, List<Bubble> bubbles) {
         if (isShooting) {
             bubble.setxBub((int) (bubble.getxBub() + speedX));
@@ -48,8 +72,9 @@ public class Shooting {
                 return true; // Dừng bắn khi chạm đỉnh
             }
 
-            // Kiểm tra va chạm giữa hình tròn hiện tại và tất cả các hình tròn khác
+            // Kiểm tra va chạm giữa bubble hiện tại và tất cả các bubble khác
             if (isColliding(bubble, bubbles, bubbleDiameter)) {
+                adjustPositionAfterCollision(bubble, bubbles, bubbleDiameter);
                 stopShooting();
                 return true; // Va chạm xảy ra
             }
@@ -59,7 +84,7 @@ public class Shooting {
 
     private boolean isColliding(Bubble b1, List<Bubble> others, int diameter) {
         int radius = diameter / 2;
-        double maxDistance = 2 * radius + 2; // Sai số 2px
+        double requiredDistance = 2 * radius ; // Khoảng cách tối thiểu giữa các bubble
 
         for (Bubble b2 : others) {
             if (b1 == b2) {
@@ -69,7 +94,7 @@ public class Shooting {
             int dy = b2.getyBub() - b1.getyBub();
             double distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance <= maxDistance) {
+            if (distance < requiredDistance) {
                 return true; // Va chạm xảy ra
             }
         }
