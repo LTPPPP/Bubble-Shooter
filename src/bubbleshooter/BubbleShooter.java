@@ -12,7 +12,7 @@ public class BubbleShooter {
         // Create the main frame
         JFrame frame = new JFrame("Bubble Shooter");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(WIDTH_BOARD, HEIGHT_BOARD);
+        frame.setSize(WIDTH_BOARD+18, HEIGHT_BOARD);
         frame.setLayout(new BorderLayout());
 
         // Create and add the Board panel

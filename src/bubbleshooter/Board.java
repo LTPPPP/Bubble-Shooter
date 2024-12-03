@@ -37,7 +37,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
         int rows = 5;
         for (int row = 0; row < rows; row++) {
             int offsetX = (row % 2 == 0) ? 0 : (bubbleDiameter + bubbleSpacing) / 2; // Dịch ngang hàng lẻ
-            for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
+            for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) -1; col++) {
                 int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
                 int y = row * (bubbleDiameter + bubbleSpacing);
                 Bubble bubble = new Bubble(x + 15, y, null);
