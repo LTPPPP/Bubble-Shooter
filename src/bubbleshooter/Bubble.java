@@ -46,4 +46,11 @@ public class Bubble {
         Random random = new Random();
         this.colorBubbles = bubbleColors[random.nextInt(bubbleColors.length)];
     }
+
+    @Override
+    public String toString() {
+        return "Bubble{" + "xBub=" + xBub + ", yBub=" + yBub + ", colorBubbles=" + colorBubbles + '}' +"\n";
+    }
+    
+    
 }
