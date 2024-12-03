@@ -15,8 +15,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
     private final int bubbleDiameter = 30;
     private Shooting shooting;
     private List<Bubble> bubbles;
-    private long lastRowAddTime;
-    private final int ROW_ADD_INTERVAL = 5000; // Thời gian tạo hàng mới (5 giây)
+    public static int ROW_ADD_INTERVAL = 0; // Thời gian tạo hàng mới (5 giây)
 
     public Board() {
         bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
@@ -111,24 +110,25 @@ public class Board extends JPanel implements MouseListener, Runnable {
 
     @Override
     public void run() {
-        lastRowAddTime = System.currentTimeMillis();
 
         while (true) {
             if (shooting.isShooting()) {
-                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter / 2, bubbles);
+                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter, bubbles);
                 if (createNewBubble) {
                     bubbles.add(new Bubble(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleShoot.getColorBubbles()));
 
                     bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
                     bubbleShoot.setRandomColor();
                     shooting = new Shooting(bubbleShoot);
+
+                    ROW_ADD_INTERVAL++;
                 }
             }
 
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - lastRowAddTime >= ROW_ADD_INTERVAL) {
+            if (ROW_ADD_INTERVAL == 10) {
+                ROW_ADD_INTERVAL = 0;
+                shooting.stopShooting();
                 addNewRow();
-                lastRowAddTime = currentTime;
             }
 
             repaint();

@@ -39,30 +39,42 @@ public class Shooting {
             bubble.setxBub((int) (bubble.getxBub() + speedX));
             bubble.setyBub((int) (bubble.getyBub() + speedY));
 
+            // Xử lý va chạm biên
             if (bubble.getxBub() <= 0 || bubble.getxBub() + bubbleDiameter >= panelWidth) {
                 speedX = -speedX; // Đổi hướng X
             }
-
             if (bubble.getyBub() <= 0) {
                 stopShooting();
-                return true;
+                return true; // Dừng bắn khi chạm đỉnh
             }
 
-            for (Bubble other : bubbles) {
-                if (isColliding(bubble, other, bubbleDiameter)) {
-                    stopShooting();
-                    return true;
-                }
+            // Kiểm tra va chạm giữa hình tròn hiện tại và tất cả các hình tròn khác
+            if (isColliding(bubble, bubbles, bubbleDiameter)) {
+                stopShooting();
+                return true; // Va chạm xảy ra
             }
         }
-        return false; 
+        return false;
     }
 
-    private boolean isColliding(Bubble b1, Bubble b2, int diameter) {
-        int dx = b1.getxBub() - b2.getxBub();
-        int dy = b1.getyBub() - b2.getyBub();
-        float distance =(float) Math.sqrt((dx*dx)+(dy*dy)) ;
-        return distance <= diameter*2  ;
+    private boolean isColliding(Bubble b1, List<Bubble> others, int diameter) {
+        int radius = diameter / 2;
+        double maxDistance = 2 * radius + 2; // Sai số 2px
+
+        for (Bubble b2 : others) {
+            if (b1 == b2) {
+                continue; // Bỏ qua so sánh với chính nó
+            }
+            int dx = b2.getxBub() - b1.getxBub();
+            int dy = b2.getyBub() - b1.getyBub();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance <= maxDistance) {
+                return true; // Va chạm xảy ra
+            }
+        }
+
+        return false; // Không va chạm
     }
 
     public boolean isShooting() {
