@@ -1,39 +1,49 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package bubbleshooter;
 
-/**
- *
- * @author Gigabyte
- */
+import java.awt.Color;
+import java.util.Random;
+
 public class Bubble {
 
     private int xBub;
     private int yBub;
+    private Color colorBubbles;
 
-    public Bubble(int xBub, int yBub) {
+    public Bubble(int xBub, int yBub, Color colorBubbles) {
         this.xBub = xBub;
         this.yBub = yBub;
+        this.colorBubbles = colorBubbles;
     }
 
-    // Getters and setters
-    public int getX() {
+    public int getxBub() {
         return xBub;
     }
 
-    public int getY() {
-        return yBub;
-    }
-
-    public void setX(int xBub) {
+    public void setxBub(int xBub) {
         this.xBub = xBub;
     }
 
-    public void setY(int yBub) {
+    public int getyBub() {
+        return yBub;
+    }
+
+    public void setyBub(int yBub) {
         this.yBub = yBub;
     }
 
+    public Color getColorBubbles() {
+        return colorBubbles;
+    }
+
+    public void setColorBubbles(Color colorBubbles) {
+        this.colorBubbles = colorBubbles;
+    }
+
+    public void setRandomColor() {
+        Color[] bubbleColors = {
+            new Color(222, 214, 193), Color.BLUE, Color.ORANGE, Color.RED
+        };
+        Random random = new Random();
+        this.colorBubbles = bubbleColors[random.nextInt(bubbleColors.length)];
+    }
 }

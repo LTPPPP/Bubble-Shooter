@@ -17,8 +17,8 @@ public class Shooting {
     public void startShooting(int targetX, int targetY) {
         isShooting = true;
 
-        double deltaX = targetX - bubble.getX();
-        double deltaY = targetY - bubble.getY();
+        double deltaX = targetX - bubble.getxBub();
+        double deltaY = targetY - bubble.getyBub();
         double magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
         double speed = 10; // Tốc độ bắn
@@ -34,16 +34,16 @@ public class Shooting {
 
     public boolean updatePosition(int panelWidth, int panelHeight, int bubbleDiameter) {
         if (isShooting) {
-            bubble.setX((int) (bubble.getX() + speedX));
-            bubble.setY((int) (bubble.getY() + speedY));
+            bubble.setxBub((int) (bubble.getxBub() + speedX));
+            bubble.setyBub((int) (bubble.getyBub() + speedY));
 
-            if (bubble.getX() <= 0 || bubble.getX() + bubbleDiameter >= panelWidth) {
+            if (bubble.getxBub() <= 0 || bubble.getxBub() + bubbleDiameter >= panelWidth) {
                 speedX = -speedX; // Đổi hướng X
             }
 
-            if (bubble.getY() <= 0 || bubble.getY() + bubbleDiameter >= panelHeight) {
+            if (bubble.getyBub() <= 0 || bubble.getyBub() + bubbleDiameter >= panelHeight) {
                 stopShooting();
-                return true; 
+                return true;
             }
         }
         return false; // Không cần tạo bóng mới

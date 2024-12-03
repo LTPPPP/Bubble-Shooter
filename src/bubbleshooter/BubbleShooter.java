@@ -17,10 +17,9 @@ public class BubbleShooter {
 
         // Create and add the Board panel
         Board board = new Board();
-        board.setBackground(Color.DARK_GRAY); // Set background color
+        board.setBackground(Color.DARK_GRAY); 
         frame.add(board, BorderLayout.CENTER);
 
-        // Set frame properties
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

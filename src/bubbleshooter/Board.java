@@ -6,28 +6,43 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board extends JPanel implements MouseListener, Runnable {
 
-    private Bubble bubble;
-    private Color bubbleColor;
+    private Bubble bubbleShoot;
     private final int bubbleDiameter = 30;
     private Shooting shooting;
+    private List<Bubble> bubbles; // Danh sách các bóng trên bảng
 
     public Board() {
-        bubble = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100);
-        bubbleColor = getRandomRainbowColor();
+        bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
+        bubbleShoot.setRandomColor();
+        bubbles = new ArrayList<>();
+        createBubbleRows(); // Tạo các hàng bóng
 
-        shooting = new Shooting(bubble);
+        shooting = new Shooting(bubbleShoot);
 
-        // Gán MouseListener
         setFocusable(true);
         addMouseListener(this);
 
-        // Khởi chạy luồng cập nhật
         Thread gameThread = new Thread(this);
         gameThread.start();
+    }
+    
+    private void createBubbleRows() {
+        int rows = 5; 
+        for (int row = 0; row < rows; row++) {
+            int offsetX = (row % 2 == 0) ? 0 : bubbleDiameter / 2; // Dịch ngang hàng lẻ
+            for (int col = 0; col < WIDTH_BOARD  / bubbleDiameter -2; col++) {
+                int x = col * bubbleDiameter + offsetX;
+                int y = row * bubbleDiameter;
+                Bubble bubble = new Bubble(x+15, y, null);
+                bubble.setRandomColor();
+                bubbles.add(bubble); 
+            }
+        }
     }
 
     @Override
@@ -35,22 +50,19 @@ public class Board extends JPanel implements MouseListener, Runnable {
         super.paintComponent(g);
 
         // Vẽ bóng
-        g.setColor(bubbleColor);
-        g.fillOval(bubble.getX(), bubble.getY(), bubbleDiameter, bubbleDiameter);
-    }
-
-    private Color getRandomRainbowColor() {
-        Color[] bubbleColors = {
-            new Color(222, 214, 193), Color.BLUE, Color.ORANGE, Color.RED
-        };
-        Random random = new Random();
-        return bubbleColors[random.nextInt(bubbleColors.length)];
+        g.setColor(bubbleShoot.getColorBubbles());
+        g.fillOval(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleDiameter, bubbleDiameter);
+        
+        for (Bubble bubble : bubbles) {
+            g.setColor(bubble.getColorBubbles());
+            g.fillOval(bubble.getxBub(), bubble.getyBub(), bubbleDiameter, bubbleDiameter);
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         if (!shooting.isShooting()) {
-            System.out.println("x Mouse : " + e.getX()+ "/y Mouse : "+ e.getY());
+            System.out.println("x Mouse : " + e.getX() + "/y Mouse : " + e.getY());
             shooting.startShooting(e.getX(), e.getY());
         }
     }
@@ -58,7 +70,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
     @Override
     public void mousePressed(MouseEvent e) {
         if (!shooting.isShooting()) {
-            System.out.println("x Mouse : " + e.getX()+ "/y Mouse : "+ e.getY());
+            System.out.println("x Mouse : " + e.getX() + "/y Mouse : " + e.getY());
             shooting.startShooting(e.getX(), e.getY());
         }
     }
@@ -66,7 +78,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
     @Override
     public void mouseReleased(MouseEvent e) {
         if (!shooting.isShooting()) {
-            System.out.println("x Mouse : " + e.getX()+ "/y Mouse : "+ e.getY());
+            System.out.println("x Mouse : " + e.getX() + "/y Mouse : " + e.getY());
             shooting.startShooting(e.getX(), e.getY());
         }
     }
@@ -85,9 +97,9 @@ public class Board extends JPanel implements MouseListener, Runnable {
             if (shooting.isShooting()) {
                 boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter);
                 if (createNewBubble) {
-                    bubble = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100);
-                    bubbleColor = getRandomRainbowColor();
-                    shooting = new Shooting(bubble);
+                    bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
+                    bubbleShoot.setRandomColor();
+                    shooting = new Shooting(bubbleShoot);
                 }
                 repaint();
             }
