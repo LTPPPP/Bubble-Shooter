@@ -21,7 +21,6 @@ public class Board extends JPanel {
     public Board() {
         bubble = new Bubble(100, 100);
         bubbleColor = getRandomRainbowColor();
-        System.out.println(WIDTH_BOARD);
         bubbleX = (WIDTH_BOARD - bubbleDiameter) / 2;
         bubbleY = HEIGHT_BOARD - bubbleDiameter - 100;
     }
@@ -35,10 +34,10 @@ public class Board extends JPanel {
     }
 
     private Color getRandomRainbowColor() {
-        Color[] rainbowColors = {
+        Color[] bubbleColors = {
             new Color(222, 214, 193), Color.BLUE, Color.ORANGE, Color.RED
         };
         Random random = new Random();
-        return rainbowColors[random.nextInt(rainbowColors.length)];
+        return bubbleColors[random.nextInt(bubbleColors.length)];
     }
 }

@@ -5,9 +5,6 @@
  */
 package bubbleshooter;
 
-import java.awt.*;
-import java.util.Random;
-
 /**
  *
  * @author Gigabyte
