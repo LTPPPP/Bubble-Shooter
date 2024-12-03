@@ -57,12 +57,10 @@ public class Board extends JPanel implements MouseListener, Runnable {
                 ? 0
                 : (bubbleDiameter + bubbleSpacing) / 2;
 
-        // Dời các bóng hiện tại xuống
         for (Bubble bubble : bubbles) {
             bubble.setyBub(bubble.getyBub() + bubbleDiameter + bubbleSpacing);
         }
 
-        // Tạo hàng mới
         for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
             int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
             int y = 0;
@@ -75,33 +73,26 @@ public class Board extends JPanel implements MouseListener, Runnable {
     private List<Bubble> findCluster(Bubble startBubble, List<Bubble> bubbles, int bubbleDiameter) {
         List<Bubble> cluster = new ArrayList<>();
 
-        // Add the initial bubble to potential cluster
         cluster.add(startBubble);
 
-        // Track visited bubbles to avoid infinite loops
         Set<Bubble> visited = new HashSet<>();
         visited.add(startBubble);
 
-        // Use a queue for breadth-first search of adjacent bubbles
         Queue<Bubble> queue = new LinkedList<>();
         queue.add(startBubble);
 
         while (!queue.isEmpty()) {
             Bubble current = queue.poll();
 
-            // Find directly adjacent bubbles of the same color
             for (Bubble neighbor : new ArrayList<>(bubbles)) {
-                // Skip if already visited or different color
                 if (visited.contains(neighbor)
                         || !neighbor.getColorBubbles().equals(current.getColorBubbles())) {
                     continue;
                 }
 
-                // Check if bubbles are directly adjacent
                 int dx = Math.abs(current.getxBub() - neighbor.getxBub());
                 int dy = Math.abs(current.getyBub() - neighbor.getyBub());
 
-                // Tighten the adjacency check to ensure bubbles are very close
                 if (dx <= bubbleDiameter + 2 && dy <= bubbleDiameter + 2
                         && (dx <= bubbleDiameter / 2 || dy <= bubbleDiameter / 2)) {
 
@@ -112,7 +103,6 @@ public class Board extends JPanel implements MouseListener, Runnable {
             }
         }
 
-        // Return cluster only if it's large enough and includes adjacent bubbles
         return cluster.size() >= 3 ? cluster : new ArrayList<>();
     }
 
@@ -126,14 +116,12 @@ public class Board extends JPanel implements MouseListener, Runnable {
         visited[index] = true;
         currentCluster.add(current);
 
-        // Kiểm tra các bóng kề cạnh
         for (Bubble neighbor : sameColorBubbles) {
             if (!visited[sameColorBubbles.indexOf(neighbor)]) {
                 int dx = current.getxBub() - neighbor.getxBub();
                 int dy = current.getyBub() - neighbor.getyBub();
                 double distance = Math.sqrt(dx * dx + dy * dy);
 
-                // Kiểm tra khoảng cách giữa các bóng
                 if (distance <= bubbleDiameter + 2) {
                     dfsCluster(neighbor, sameColorBubbles, currentCluster, visited, bubbleDiameter);
                 }
@@ -144,7 +132,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
     private void dfs(Bubble current, List<Bubble> bubbles, List<Bubble> cluster, boolean[] visited, int bubbleDiameter) {
         int index = bubbles.indexOf(current);
         if (index == -1 || visited[index]) {
-            return; // Skip if the bubble is not found or already visited
+            return; 
         }
         visited[index] = true;
         cluster.add(current);
@@ -163,7 +151,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
                 int dx = bubble.getxBub() - other.getxBub();
                 int dy = bubble.getyBub() - other.getyBub();
                 double distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance <= bubbleDiameter + 2) { // Thêm khoảng cách nhỏ để va chạm
+                if (distance <= bubbleDiameter + 2) { 
                     neighbors.add(other);
                 }
             }
@@ -216,7 +204,6 @@ public class Board extends JPanel implements MouseListener, Runnable {
                 if (createNewBubble) {
                     bubbles.add(new Bubble(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleShoot.getColorBubbles()));
 
-                    // Thay thế đoạn mã hiện tại
                     List<Bubble> cluster = findCluster(bubbleShoot, bubbles, bubbleDiameter);
                     if (cluster.size() >= 3) {
                         bubbles.removeAll(cluster); // Xóa cụm bóng
