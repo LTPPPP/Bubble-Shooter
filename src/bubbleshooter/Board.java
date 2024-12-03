@@ -4,33 +4,39 @@ import static bubbleshooter.BubbleShooter.HEIGHT_BOARD;
 import static bubbleshooter.BubbleShooter.WIDTH_BOARD;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Random;
 
-/**
- *
- * @author Gigabyte
- */
-public class Board extends JPanel {
+public class Board extends JPanel implements MouseListener, Runnable {
 
     private Bubble bubble;
     private Color bubbleColor;
     private final int bubbleDiameter = 30;
-    private int bubbleX;
-    private int bubbleY;
+    private Shooting shooting;
 
     public Board() {
-        bubble = new Bubble(100, 100);
+        bubble = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100);
         bubbleColor = getRandomRainbowColor();
-        bubbleX = (WIDTH_BOARD - bubbleDiameter) / 2;
-        bubbleY = HEIGHT_BOARD - bubbleDiameter - 100;
+
+        shooting = new Shooting(bubble);
+
+        // Gán MouseListener
+        setFocusable(true);
+        addMouseListener(this);
+
+        // Khởi chạy luồng cập nhật
+        Thread gameThread = new Thread(this);
+        gameThread.start();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Vẽ bóng
         g.setColor(bubbleColor);
-        g.fillOval(bubbleX, bubbleY, bubbleDiameter, bubbleDiameter);
+        g.fillOval(bubble.getX(), bubble.getY(), bubbleDiameter, bubbleDiameter);
     }
 
     private Color getRandomRainbowColor() {
@@ -39,5 +45,57 @@ public class Board extends JPanel {
         };
         Random random = new Random();
         return bubbleColors[random.nextInt(bubbleColors.length)];
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (!shooting.isShooting()) {
+            System.out.println("x Mouse : " + e.getX()+ "/y Mouse : "+ e.getY());
+            shooting.startShooting(e.getX(), e.getY());
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (!shooting.isShooting()) {
+            System.out.println("x Mouse : " + e.getX()+ "/y Mouse : "+ e.getY());
+            shooting.startShooting(e.getX(), e.getY());
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (!shooting.isShooting()) {
+            System.out.println("x Mouse : " + e.getX()+ "/y Mouse : "+ e.getY());
+            shooting.startShooting(e.getX(), e.getY());
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            if (shooting.isShooting()) {
+                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter);
+                if (createNewBubble) {
+                    bubble = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100);
+                    bubbleColor = getRandomRainbowColor();
+                    shooting = new Shooting(bubble);
+                }
+                repaint();
+            }
+            try {
+                Thread.sleep(16);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 }
