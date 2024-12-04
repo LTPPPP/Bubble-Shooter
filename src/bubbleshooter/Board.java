@@ -1,223 +1,228 @@
 package bubbleshooter;
 
-import static bubbleshooter.BubbleShooter.HEIGHT_BOARD;
-import static bubbleshooter.BubbleShooter.WIDTH_BOARD;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
-public class Board extends JPanel implements MouseListener, Runnable {
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 
-    private Bubble bubbleShoot;
-    private final int bubbleDiameter = 30;
-    private final int bubbleSpacing = 2;
+public class Board extends JPanel implements
+        MouseMotionListener, MouseListener, ActionListener {
+
+    private Arrow arrow;
     private Shooting shooting;
-    private final List<Bubble> bubbles;
-    public static int ROW_ADD_INTERVAL = 0;
+    private JLayeredPane lPane;
+    private JPanel highscorePanel;
+    private JPanel namePanel;
+    private JLabel resultText;
+    private JTextField textField;
+    private HighScores highscores;
+    private JTable highscoreTable;
+    private JScrollPane scrollPane;
+    private static final String fileName = "bubble_shooter_hs.dat";
 
     public Board() {
-        bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
-        bubbleShoot.setRandomColor();
-        bubbles = new ArrayList<>();
-        createBubbleRows();
-
-        shooting = new Shooting(bubbleShoot);
-
-        setFocusable(true);
+        setLayout(new BorderLayout());
+        setPreferredSize(
+                new Dimension(BubbleShooter.FIELD_SIZE_X,
+                        BubbleShooter.FIELD_SIZE_Y));
+        setBorder(BorderFactory.createEmptyBorder());
+        addMouseMotionListener(this);
         addMouseListener(this);
+        setOpaque(true);
+        arrow = new Arrow();
 
-        Thread gameThread = new Thread(this);
-        gameThread.start();
+        lPane = new JLayeredPane();
+        lPane.setBackground(new Color(0, 0, 0, 0));
+
+        JPanel blur = new JPanel();
+        blur.setBackground(new Color(255, 255, 255, 120));
+        blur.setBounds(0, 0, BubbleShooter.FIELD_SIZE_X, BubbleShooter.FIELD_SIZE_Y);
+
+        highscorePanel = new JPanel();
+        highscorePanel.setBackground(new Color(highscorePanel.getBackground().getRed(),
+                highscorePanel.getBackground().getGreen(),
+                highscorePanel.getBackground().getRed(),
+                120));
+        highscorePanel.setBounds(40, 20, BubbleShooter.FIELD_SIZE_X - 2 * 40, BubbleShooter.FIELD_SIZE_Y - 2 * 30);
+        highscorePanel.setLayout(new BorderLayout());
+
+        highscores = new HighScores();
+
+        highscoreTable = new JTable();
+        highscoreTable.setFillsViewportHeight(true);
+        highscoreTable.setModel(highscores);
+        highscoreTable.getTableHeader().setReorderingAllowed(false);
+        scrollPane = new JScrollPane(highscoreTable);
+        highscorePanel.add(scrollPane, BorderLayout.CENTER);
+
+        lPane.add(blur, JLayeredPane.DEFAULT_LAYER);
+        lPane.add(highscorePanel, JLayeredPane.PALETTE_LAYER);
+
+        namePanel = new JPanel();
+        namePanel.setLayout(new BorderLayout());
+        namePanel.setBounds(80, 60, BubbleShooter.FIELD_SIZE_X - 2 * 80, 185);
+        namePanel.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+
+        JPanel subNamePanel = new JPanel();
+        subNamePanel.setLayout(new BoxLayout(subNamePanel, BoxLayout.Y_AXIS));
+        subNamePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        resultText = new JLabel("Kecskeeee");
+        resultText.setFont(new Font(resultText.getFont().getName(), Font.ITALIC, 30));
+        resultText.setAlignmentX(CENTER_ALIGNMENT);
+        resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        JLabel please = new JLabel("<html><div style=\"text-align: center;\">You made it to the toplist, please enter your name and click the button to proceed!</html>");
+        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 13));
+        please.setAlignmentX(CENTER_ALIGNMENT);
+        please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        textField = new JTextField(20);
+        JButton button = new JButton("Enter");
+        button.addActionListener(this);
+
+        JPanel formContainer = new JPanel();
+        formContainer.add(textField);
+        formContainer.add(button);
+
+        subNamePanel.add(resultText);
+        subNamePanel.add(please);
+        subNamePanel.add(formContainer);
+        namePanel.add(subNamePanel, BorderLayout.CENTER);
+
     }
 
-    private void createBubbleRows() {
-        int rows = 5;
-        for (int row = 0; row < rows; row++) {
-            int offsetX = (row % 2 == 0) ? 0 : (bubbleDiameter + bubbleSpacing) / 2;
-            for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 1; col++) {
-                int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
-                int y = row * (bubbleDiameter + bubbleSpacing);
-                Bubble bubble = new Bubble(x + 15, y, null);
-                bubble.setRandomColor();
-                bubbles.add(bubble);
-            }
+    public void displayHighscore(long score, boolean win) {
+
+        resultText.setText(win ? "You win!" : "You lose");
+        if (score != 0) {
+            lPane.add(namePanel, JLayeredPane.DRAG_LAYER);
+        }
+        add(lPane);
+        loadHighScores();
+        highscoreTable.setModel(highscores);
+        repaint();
+    }
+
+    public void newGame(int row, int color) {
+        shooting = new Shooting(row, color, this);
+        lPane.remove(namePanel);
+        remove(lPane);
+        repaint();
+    }
+
+    public Shooting getGame() {
+        return shooting;
+    }
+
+    private void saveHighScores() {
+        try {
+            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName));
+            os.writeObject(highscores);
+            os.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private void addNewRow() {
-        int offsetX = (bubbles.size() / (WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2)) % 2 == 0
-                ? 0
-                : (bubbleDiameter + bubbleSpacing) / 2;
-
-        // Dời các bóng hiện tại xuống
-        for (Bubble bubble : bubbles) {
-            bubble.setyBub(bubble.getyBub() + bubbleDiameter + bubbleSpacing);
-        }
-
-        // Tạo hàng mới
-        for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
-            int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
-            int y = 0;
-            Bubble bubble = new Bubble(x + 15, y, null);
-            bubble.setRandomColor();
-            bubbles.add(0, bubble); // Thêm vào đầu danh sách
-        }
-    }
-
-    private List<Bubble> findCluster(Bubble target) {
-        List<Bubble> cluster = new ArrayList<>();
-        Queue<Bubble> queue = new LinkedList<>();
-        Set<Bubble> visited = new HashSet<>();
-        queue.add(target);
-        visited.add(target);
-
-        while (!queue.isEmpty()) {
-            Bubble current = queue.poll();
-            cluster.add(current);
-
-            for (Bubble neighbor : getNeighbors(current)) {
-                if (!visited.contains(neighbor) && neighbor.getColorBubbles().equals(target.getColorBubbles())) {
-                    queue.add(neighbor);
-                    visited.add(neighbor);
-                }
+    private void loadHighScores() {
+        try {
+            File f = new File("bubble_shooter_hs.dat");
+            if (f.exists()) {
+                ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName));
+                highscores = (HighScores) os.readObject();
+                os.close();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return cluster;
-    }
-
-    private List<Bubble> getNeighbors(Bubble bubble) {
-        List<Bubble> neighbors = new ArrayList<>();
-        int radius = bubbleDiameter + bubbleSpacing;
-
-        for (Bubble other : bubbles) {
-            if (bubble == other) {
-                continue;
-            }
-
-            int dx = bubble.getxBub() - other.getxBub();
-            int dy = bubble.getyBub() - other.getyBub();
-            if (Math.sqrt(dx * dx + dy * dy) <= radius) {
-                neighbors.add(other);
-            }
-        }
-        return neighbors;
-    }
-
-    private void removeCluster(List<Bubble> cluster) {
-        bubbles.removeAll(cluster);
-    }
-
-    private void checkFloatingBubbles() {
-        Set<Bubble> connected = new HashSet<>();
-        Queue<Bubble> queue = new LinkedList<>();
-
-        for (Bubble bubble : bubbles) {
-            if (bubble.getyBub() == 0) {
-                queue.add(bubble);
-                connected.add(bubble);
-            }
-        }
-
-        while (!queue.isEmpty()) {
-            Bubble current = queue.poll();
-
-            for (Bubble neighbor : getNeighbors(current)) {
-                if (!connected.contains(neighbor)) {
-                    connected.add(neighbor);
-                    queue.add(neighbor);
-                }
-            }
-        }
-
-        bubbles.removeIf(bubble -> !connected.contains(bubble));
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        g.setColor(bubbleShoot.getColorBubbles());
-        g.fillOval(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleDiameter, bubbleDiameter);
-
-        for (Bubble bubble : bubbles) {
-            g.setColor(bubble.getColorBubbles());
-            g.fillOval(bubble.getxBub(), bubble.getyBub(), bubbleDiameter, bubbleDiameter);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHints(
+                new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON));
+        if (shooting != null) {
+            shooting.paintBubbles(g2d);
         }
+        arrow.paintComponent(g2d, getLocationOnScreen());
+    }
+
+    ;
+	
+
+	@Override
+    public void mouseDragged(MouseEvent arg0) {
+        mouseMoved(arg0);
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        if (!shooting.isShooting()) {
-            System.out.println("x Mouse : " + e.getX() + "/y Mouse : " + e.getY());
-            shooting.startShooting(e.getX(), e.getY());
-        }
+    public void mouseMoved(MouseEvent arg0) {
+        repaint();
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
-        if (!shooting.isShooting()) {
-            System.out.println("x Mouse : " + e.getX() + "/y Mouse : " + e.getY());
-            shooting.startShooting(e.getX(), e.getY());
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        if (!shooting.isShooting()) {
-            System.out.println("x Mouse : " + e.getX() + "/y Mouse : " + e.getY());
-            shooting.startShooting(e.getX(), e.getY());
-        }
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            if (shooting.isShooting()) {
-                boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter + 2, bubbles);
-                if (createNewBubble) {
-                    bubbles.add(new Bubble(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleShoot.getColorBubbles()));
-
-                    List<Bubble> cluster = findCluster(bubbleShoot);
-                    if (cluster.size() >= 3) {
-                        removeCluster(cluster);
-//                        checkFloatingBubbles();
-                    }
-
-                    bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
-                    bubbleShoot.setRandomColor();
-                    shooting = new Shooting(bubbleShoot);
-
-                    ROW_ADD_INTERVAL++;
-                }
+    public void mouseClicked(MouseEvent arg0) {
+        if (shooting != null) {
+            if (!shooting.isStopped()) {
+                shooting.fire(MouseInfo.getPointerInfo().getLocation(), getLocationOnScreen());
+                repaint();
             }
+        }
 
-            if (ROW_ADD_INTERVAL == 10) {
-                ROW_ADD_INTERVAL = 0;
-                shooting.stopShooting();
-                addNewRow();
-            }
+    }
 
-            repaint();
-            try {
-                Thread.sleep(16);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
+    @Override
+    public void mouseEntered(MouseEvent arg0) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent arg0) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent arg0) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent arg0) {
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (!textField.getText().equals("")) {
+            highscores.addEntry(new HighscoreEntry(textField.getText(),
+                    shooting.getScore(), shooting.getInitialRows(), shooting.getColors()));
+            saveHighScores();
+            lPane.remove(namePanel);
+            displayHighscore(0, true);
         }
     }
 }

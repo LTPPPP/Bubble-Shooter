@@ -1,57 +1,103 @@
 package bubbleshooter;
 
 import java.awt.Color;
-import java.util.Random;
+import java.awt.Graphics2D;
+import java.awt.Point;
 
 public class Bubble {
 
-    private int xBub, yBub;
-    private final int diameter = 30;
-    private Color colorBubbles;
+    private Color color;
+    public static final int RADIUS = 14;
+    private boolean visible;
+    public Point point;
+    private boolean marked;
 
-    public Bubble(int xBub, int yBub, Color colorBubbles) {
-        this.xBub = xBub;
-        this.yBub = yBub;
-        this.colorBubbles = colorBubbles;
+    public Bubble(Color c) {
+        color = c;
+        marked = false;
     }
 
-    public void setRandomColor() {
-        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.PINK};
-        Random random = new Random();
-        this.colorBubbles = colors[random.nextInt(colors.length)];
+    public Bubble(Color color, boolean visible, Point point, boolean marked) {
+        this.color = color;
+        this.visible = visible;
+        this.point = point;
+        this.marked = marked;
     }
 
-    public int getxBub() {
-        return xBub;
+    public int getRow() {
+        return point.y / (BubbleShooter.ROW_DISTANCE / 2);
     }
 
-    public void setxBub(int xBub) {
-        this.xBub = xBub;
+    public int getCol() {
+        return point.x / ((Bubble.RADIUS + 1) * 2);
     }
 
-    public int getyBub() {
-        return yBub;
+    public void mark() {
+        marked = true;
     }
 
-    public void setyBub(int yBub) {
-        this.yBub = yBub;
+    public void unmark() {
+        marked = false;
     }
 
-    public Color getColorBubbles() {
-        return colorBubbles;
+    public boolean isMarked() {
+        return marked;
     }
 
-    public void setColorBubbles(Color colorBubbles) {
-        this.colorBubbles = colorBubbles;
+    public Color getColor() {
+        return color;
     }
 
-    public int getDiameter() {
-        return diameter;
+    public void setVisible(boolean v) {
+        visible = v;
     }
 
-    @Override
-    public String toString() {
-        return "Bubble{" + "xBub=" + xBub + ", yBub=" + yBub + ", diameter=" + diameter + ", colorBubbles=" + colorBubbles + '}' + "\n";
+    public boolean isVisible() {
+        return visible;
     }
 
+    public void setLocation(Point p) {
+        this.point = p;
+    }
+
+    public Point getLocation() {
+        return point;
+    }
+
+    public Point getCenterLocation() {
+        return new Point(point.x + RADIUS + 1,
+                point.y + RADIUS + 1);
+    }
+
+    public void paintBubble(Graphics2D g2d) {
+        if (isVisible()) {
+            g2d.setColor(color);
+            g2d.fillOval(point.x, point.y, RADIUS * 2, RADIUS * 2);
+        }
+    }
+
+    public static Color getRandomColor(int bound) {
+        int rnd = (int) (bound <= 8 ? Math.random() * bound : Math.random() * 8);
+        switch (rnd) {
+            case 0:
+                return Color.blue;
+            case 1:
+                return Color.red;
+            case 2:
+                return Color.yellow;
+            case 3:
+                return Color.green;
+            case 4:
+                return Color.cyan;
+            case 5:
+                return Color.magenta;
+            case 6:
+                return Color.orange;
+            case 7:
+                return Color.darkGray;
+            default:
+                break;
+        }
+        return null;
+    }
 }
