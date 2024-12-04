@@ -19,7 +19,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
     private final int bubbleDiameter = 30;
     private final int bubbleSpacing = 2;
     private Shooting shooting;
-    private List<Bubble> bubbles;
+    private final List<Bubble> bubbles;
     public static int ROW_ADD_INTERVAL = 0;
 
     public Board() {
@@ -48,6 +48,26 @@ public class Board extends JPanel implements MouseListener, Runnable {
                 bubble.setRandomColor();
                 bubbles.add(bubble);
             }
+        }
+    }
+
+    private void addNewRow() {
+        int offsetX = (bubbles.size() / (WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2)) % 2 == 0
+                ? 0
+                : (bubbleDiameter + bubbleSpacing) / 2;
+
+        // Dời các bóng hiện tại xuống
+        for (Bubble bubble : bubbles) {
+            bubble.setyBub(bubble.getyBub() + bubbleDiameter + bubbleSpacing);
+        }
+
+        // Tạo hàng mới
+        for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
+            int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
+            int y = 0;
+            Bubble bubble = new Bubble(x + 15, y, null);
+            bubble.setRandomColor();
+            bubbles.add(0, bubble); // Thêm vào đầu danh sách
         }
     }
 
@@ -175,7 +195,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
                     List<Bubble> cluster = findCluster(bubbleShoot);
                     if (cluster.size() >= 3) {
                         removeCluster(cluster);
-                        checkFloatingBubbles();
+//                        checkFloatingBubbles();
                     }
 
                     bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
@@ -189,7 +209,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
             if (ROW_ADD_INTERVAL == 10) {
                 ROW_ADD_INTERVAL = 0;
                 shooting.stopShooting();
-//                addNewRow();
+                addNewRow();
             }
 
             repaint();

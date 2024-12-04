@@ -69,7 +69,7 @@ public class Shooting {
             int dy = b2.getyBub() - b1.getyBub();
             double distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < requiredDistance) {
+            if (distance <= requiredDistance) {
                 return true; // Va chạm xảy ra
             }
         }
