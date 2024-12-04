@@ -5,14 +5,20 @@ import java.util.Random;
 
 public class Bubble {
 
-    private int xBub;
-    private int yBub;
+    private int xBub, yBub;
+    private final int diameter = 30;
     private Color colorBubbles;
 
     public Bubble(int xBub, int yBub, Color colorBubbles) {
         this.xBub = xBub;
         this.yBub = yBub;
         this.colorBubbles = colorBubbles;
+    }
+
+    public void setRandomColor() {
+        Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.PINK};
+        Random random = new Random();
+        this.colorBubbles = colors[random.nextInt(colors.length)];
     }
 
     public int getxBub() {
@@ -39,18 +45,13 @@ public class Bubble {
         this.colorBubbles = colorBubbles;
     }
 
-    public void setRandomColor() {
-        Color[] bubbleColors = {
-            new Color(222, 214, 193), Color.BLUE, Color.ORANGE, Color.RED
-        };
-        Random random = new Random();
-        this.colorBubbles = bubbleColors[random.nextInt(bubbleColors.length)];
+    public int getDiameter() {
+        return diameter;
     }
 
     @Override
     public String toString() {
-        return "Bubble{" + "xBub=" + xBub + ", yBub=" + yBub + ", colorBubbles=" + colorBubbles + '}' +"\n";
+        return "Bubble{" + "xBub=" + xBub + ", yBub=" + yBub + ", diameter=" + diameter + ", colorBubbles=" + colorBubbles + '}' + "\n";
     }
-    
-    
+
 }
