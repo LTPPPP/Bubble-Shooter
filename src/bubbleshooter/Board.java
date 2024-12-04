@@ -35,20 +35,14 @@ public class Board extends JPanel implements
     private Arrow arrow;
     private Shooting shooting;
     private JLayeredPane lPane;
-    private JPanel highscorePanel;
-    private JPanel namePanel;
-    private JLabel resultText;
-    private JTextField textField;
-    private HighScores highscores;
-    private JTable highscoreTable;
     private JScrollPane scrollPane;
     private static final String fileName = "bubble_shooter_hs.dat";
 
     public Board() {
         setLayout(new BorderLayout());
         setPreferredSize(
-                new Dimension(BubbleShooter.FIELD_SIZE_X,
-                        BubbleShooter.FIELD_SIZE_Y));
+                new Dimension(BubbleShooter.WIDTH_BOARD,
+                        BubbleShooter.HEIGHT_BOARD));
         setBorder(BorderFactory.createEmptyBorder());
         addMouseMotionListener(this);
         addMouseListener(this);
@@ -60,106 +54,17 @@ public class Board extends JPanel implements
 
         JPanel blur = new JPanel();
         blur.setBackground(new Color(255, 255, 255, 120));
-        blur.setBounds(0, 0, BubbleShooter.FIELD_SIZE_X, BubbleShooter.FIELD_SIZE_Y);
-
-        highscorePanel = new JPanel();
-        highscorePanel.setBackground(new Color(highscorePanel.getBackground().getRed(),
-                highscorePanel.getBackground().getGreen(),
-                highscorePanel.getBackground().getRed(),
-                120));
-        highscorePanel.setBounds(40, 20, BubbleShooter.FIELD_SIZE_X - 2 * 40, BubbleShooter.FIELD_SIZE_Y - 2 * 30);
-        highscorePanel.setLayout(new BorderLayout());
-
-        highscores = new HighScores();
-
-        highscoreTable = new JTable();
-        highscoreTable.setFillsViewportHeight(true);
-        highscoreTable.setModel(highscores);
-        highscoreTable.getTableHeader().setReorderingAllowed(false);
-        scrollPane = new JScrollPane(highscoreTable);
-        highscorePanel.add(scrollPane, BorderLayout.CENTER);
-
-        lPane.add(blur, JLayeredPane.DEFAULT_LAYER);
-        lPane.add(highscorePanel, JLayeredPane.PALETTE_LAYER);
-
-        namePanel = new JPanel();
-        namePanel.setLayout(new BorderLayout());
-        namePanel.setBounds(80, 60, BubbleShooter.FIELD_SIZE_X - 2 * 80, 185);
-        namePanel.setBorder(BorderFactory.createLineBorder(Color.darkGray));
-
-        JPanel subNamePanel = new JPanel();
-        subNamePanel.setLayout(new BoxLayout(subNamePanel, BoxLayout.Y_AXIS));
-        subNamePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        resultText = new JLabel("Kecskeeee");
-        resultText.setFont(new Font(resultText.getFont().getName(), Font.ITALIC, 30));
-        resultText.setAlignmentX(CENTER_ALIGNMENT);
-        resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-
-        JLabel please = new JLabel("<html><div style=\"text-align: center;\">You made it to the toplist, please enter your name and click the button to proceed!</html>");
-        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 13));
-        please.setAlignmentX(CENTER_ALIGNMENT);
-        please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-
-        textField = new JTextField(20);
-        JButton button = new JButton("Enter");
-        button.addActionListener(this);
-
-        JPanel formContainer = new JPanel();
-        formContainer.add(textField);
-        formContainer.add(button);
-
-        subNamePanel.add(resultText);
-        subNamePanel.add(please);
-        subNamePanel.add(formContainer);
-        namePanel.add(subNamePanel, BorderLayout.CENTER);
-
-    }
-
-    public void displayHighscore(long score, boolean win) {
-
-        resultText.setText(win ? "You win!" : "You lose");
-        if (score != 0) {
-            lPane.add(namePanel, JLayeredPane.DRAG_LAYER);
-        }
-        add(lPane);
-        loadHighScores();
-        highscoreTable.setModel(highscores);
-        repaint();
+        blur.setBounds(0, 0, BubbleShooter.WIDTH_BOARD, BubbleShooter.HEIGHT_BOARD);
     }
 
     public void newGame(int row, int color) {
         shooting = new Shooting(row, color, this);
-        lPane.remove(namePanel);
         remove(lPane);
         repaint();
     }
 
     public Shooting getGame() {
         return shooting;
-    }
-
-    private void saveHighScores() {
-        try {
-            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(fileName));
-            os.writeObject(highscores);
-            os.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadHighScores() {
-        try {
-            File f = new File("bubble_shooter_hs.dat");
-            if (f.exists()) {
-                ObjectInputStream os = new ObjectInputStream(new FileInputStream(fileName));
-                highscores = (HighScores) os.readObject();
-                os.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -217,12 +122,6 @@ public class Board extends JPanel implements
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!textField.getText().equals("")) {
-            highscores.addEntry(new HighscoreEntry(textField.getText(),
-                    shooting.getScore(), shooting.getInitialRows(), shooting.getColors()));
-            saveHighScores();
-            lPane.remove(namePanel);
-            displayHighscore(0, true);
-        }
     }
+
 }

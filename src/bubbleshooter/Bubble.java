@@ -89,12 +89,6 @@ public class Bubble {
                 return Color.green;
             case 4:
                 return Color.cyan;
-            case 5:
-                return Color.magenta;
-            case 6:
-                return Color.orange;
-            case 7:
-                return Color.darkGray;
             default:
                 break;
         }

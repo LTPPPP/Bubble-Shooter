@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.function.Consumer;
 
 import javax.swing.Timer;
 
@@ -23,9 +24,10 @@ public class Shooting implements ActionListener {
     private MainFrame mainFrame;
     private long score;
     private boolean stopped;
-    public static final int ROW_COUNT = 16;
-    public static final int COL_COUNT_FULL = 14;
-    public static final int COL_COUNT = 13;
+
+    public static final int ROW_COUNT = (int) Math.ceil(BubbleShooter.HEIGHT_BOARD / (2.0 * Bubble.RADIUS));
+    public static final int COL_COUNT_FULL = (int) Math.ceil(BubbleShooter.WIDTH_BOARD / (2.0 * Bubble.RADIUS));
+    public static final int COL_COUNT = COL_COUNT_FULL - 1;
     public static final int SCORE_SHOT = 10;
     public static final int SCORE_COHERENT = 20;
     public static final int SCORE_FLOATING = 40;
@@ -38,9 +40,9 @@ public class Shooting implements ActionListener {
         shotCount = 0;
         numOfBubbles = 0;
         score = 0;
-        bubbles = new ArrayList<RowList>();
+        bubbles = new ArrayList<>();
         for (int i = 0; i < ROW_COUNT; i++) {
-            RowList r = new RowList((i % 2 == 0 ? true : false));
+            RowList r = new RowList((i % 2 == 0));
             bubbles.add(r);
             for (int j = 0; j < (r.isFull() ? 14 : 13); j++) {
                 Bubble b = new Bubble(Bubble.getRandomColor(colors));
@@ -58,7 +60,7 @@ public class Shooting implements ActionListener {
             }
         }
 
-        upcoming = new LinkedList<Bubble>();
+        upcoming = new LinkedList<>();
         for (int i = 0; i < 4; i++) {
             Bubble b = new Bubble(Bubble.getRandomColor(colors));
             upcoming.add(b);
@@ -71,27 +73,27 @@ public class Shooting implements ActionListener {
     }
 
     public void paintBubbles(Graphics2D g2d) {
-        for (RowList r : bubbles) {
-            for (Bubble b : r) {
+        bubbles.forEach((RowList r) -> {
+            r.forEach((b) -> {
                 b.paintBubble(g2d);
-            }
-        }
-        for (Bubble b : upcoming) {
+            });
+        });
+        upcoming.forEach((b) -> {
             b.paintBubble(g2d);
-        }
+        });
         if (moving_bubble != null) {
             moving_bubble.paintBubble(g2d);
         }
     }
 
     private void arrangeUpcoming() {
-        upcoming.element().setLocation(new Point(BubbleShooter.FIELD_SIZE_X / 2 - Bubble.RADIUS,
-                BubbleShooter.FIELD_SIZE_Y - Bubble.RADIUS));
+        upcoming.element().setLocation(new Point(BubbleShooter.WIDTH_BOARD / 2 - Bubble.RADIUS,
+                BubbleShooter.HEIGHT_BOARD - Bubble.RADIUS));
         upcoming.element().setVisible(true);
         for (int i = 1; i < 4; i++) {
             upcoming.get(i).setLocation(new Point(
-                    BubbleShooter.FIELD_SIZE_X - (4 - i) * (2 * (Bubble.RADIUS + 6)),
-                    BubbleShooter.FIELD_SIZE_Y - (Bubble.RADIUS + 1)));
+                    BubbleShooter.WIDTH_BOARD - (4 - i) * (2 * (Bubble.RADIUS + 6)),
+                    BubbleShooter.HEIGHT_BOARD - (Bubble.RADIUS + 1)));
             upcoming.get(i).setVisible(true);
         }
     }
@@ -170,11 +172,11 @@ public class Shooting implements ActionListener {
 
     private void addRow() {
         bubbles.remove(ROW_COUNT - 1);
-        for (RowList r : bubbles) {
-            for (Bubble b : r) {
+        bubbles.forEach((RowList r) -> {
+            r.forEach((b) -> {
                 b.setLocation(new Point(b.getLocation().x, b.getLocation().y + BubbleShooter.ROW_DISTANCE / 2));
-            }
-        }
+            });
+        });
         RowList newRow = new RowList(!bubbles.get(0).isFull());
         for (int i = 0; i < (newRow.isFull() ? 14 : 13); i++) {
             Bubble b = new Bubble(Bubble.getRandomColor(colors));
@@ -188,7 +190,7 @@ public class Shooting implements ActionListener {
     }
 
     private ArrayList<Bubble> getNeighbours(int row, int col) {
-        ArrayList<Bubble> neighbours = new ArrayList<Bubble>();
+        ArrayList<Bubble> neighbours = new ArrayList<>();
         if (col > 0) {
             neighbours.add(bubbles.get(row).get(col - 1));
         }
@@ -243,11 +245,9 @@ public class Shooting implements ActionListener {
 
     private int removeFloating() {
         markAll();
-        for (Bubble b : bubbles.get(0)) {
-            if (b.isVisible()) {
-                unMarkNotFloating(b.getRow(), b.getCol());
-            }
-        }
+        bubbles.get(0).stream().filter((b) -> (b.isVisible())).forEachOrdered((b) -> {
+            unMarkNotFloating(b.getRow(), b.getCol());
+        });
         int ret = countMarked();
         removeMarked();
         unMarkAll();
@@ -257,11 +257,9 @@ public class Shooting implements ActionListener {
 
     private void unMarkNotFloating(int row, int col) {
         bubbles.get(row).get(col).unmark();
-        for (Bubble b : getNeighbours(row, col)) {
-            if (b.isMarked() && b.isVisible()) {
-                unMarkNotFloating(b.getRow(), b.getCol());
-            }
-        }
+        getNeighbours(row, col).stream().filter((b) -> (b.isMarked() && b.isVisible())).forEachOrdered((b) -> {
+            unMarkNotFloating(b.getRow(), b.getCol());
+        });
     }
 
     private void markColor(int row, int col) {
