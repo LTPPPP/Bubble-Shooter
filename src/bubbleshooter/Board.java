@@ -7,7 +7,11 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class Board extends JPanel implements MouseListener, Runnable {
 
@@ -22,7 +26,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
         bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
         bubbleShoot.setRandomColor();
         bubbles = new ArrayList<>();
-        createBubbleRows(); // Tạo các hàng bóng
+        createBubbleRows();
 
         shooting = new Shooting(bubbleShoot);
 
@@ -36,7 +40,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
     private void createBubbleRows() {
         int rows = 5;
         for (int row = 0; row < rows; row++) {
-            int offsetX = (row % 2 == 0) ? 0 : (bubbleDiameter + bubbleSpacing) / 2; // Dịch ngang hàng lẻ
+            int offsetX = (row % 2 == 0) ? 0 : (bubbleDiameter + bubbleSpacing) / 2;
             for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 1; col++) {
                 int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
                 int y = row * (bubbleDiameter + bubbleSpacing);
@@ -47,31 +51,78 @@ public class Board extends JPanel implements MouseListener, Runnable {
         }
     }
 
-    private void addNewRow() {
-        int offsetX = (bubbles.size() / (WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2)) % 2 == 0
-                ? 0
-                : (bubbleDiameter + bubbleSpacing) / 2;
+    private List<Bubble> findCluster(Bubble target) {
+        List<Bubble> cluster = new ArrayList<>();
+        Queue<Bubble> queue = new LinkedList<>();
+        Set<Bubble> visited = new HashSet<>();
+        queue.add(target);
+        visited.add(target);
 
-        // Dời các bóng hiện tại xuống
+        while (!queue.isEmpty()) {
+            Bubble current = queue.poll();
+            cluster.add(current);
+
+            for (Bubble neighbor : getNeighbors(current)) {
+                if (!visited.contains(neighbor) && neighbor.getColorBubbles().equals(target.getColorBubbles())) {
+                    queue.add(neighbor);
+                    visited.add(neighbor);
+                }
+            }
+        }
+        return cluster;
+    }
+
+    private List<Bubble> getNeighbors(Bubble bubble) {
+        List<Bubble> neighbors = new ArrayList<>();
+        int radius = bubbleDiameter + bubbleSpacing;
+
+        for (Bubble other : bubbles) {
+            if (bubble == other) {
+                continue;
+            }
+
+            int dx = bubble.getxBub() - other.getxBub();
+            int dy = bubble.getyBub() - other.getyBub();
+            if (Math.sqrt(dx * dx + dy * dy) <= radius) {
+                neighbors.add(other);
+            }
+        }
+        return neighbors;
+    }
+
+    private void removeCluster(List<Bubble> cluster) {
+        bubbles.removeAll(cluster);
+    }
+
+    private void checkFloatingBubbles() {
+        Set<Bubble> connected = new HashSet<>();
+        Queue<Bubble> queue = new LinkedList<>();
+
         for (Bubble bubble : bubbles) {
-            bubble.setyBub(bubble.getyBub() + bubbleDiameter + bubbleSpacing);
+            if (bubble.getyBub() == 0) {
+                queue.add(bubble);
+                connected.add(bubble);
+            }
         }
 
-        // Tạo hàng mới
-        for (int col = 0; col < WIDTH_BOARD / (bubbleDiameter + bubbleSpacing) - 2; col++) {
-            int x = col * (bubbleDiameter + bubbleSpacing) + offsetX;
-            int y = 0;
-            Bubble bubble = new Bubble(x + 15, y, null);
-            bubble.setRandomColor();
-            bubbles.add(0, bubble); // Thêm vào đầu danh sách
+        while (!queue.isEmpty()) {
+            Bubble current = queue.poll();
+
+            for (Bubble neighbor : getNeighbors(current)) {
+                if (!connected.contains(neighbor)) {
+                    connected.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
         }
+
+        bubbles.removeIf(bubble -> !connected.contains(bubble));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Vẽ bóng
         g.setColor(bubbleShoot.getColorBubbles());
         g.fillOval(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleDiameter, bubbleDiameter);
 
@@ -115,12 +166,17 @@ public class Board extends JPanel implements MouseListener, Runnable {
 
     @Override
     public void run() {
-
         while (true) {
             if (shooting.isShooting()) {
                 boolean createNewBubble = shooting.updatePosition(WIDTH_BOARD, HEIGHT_BOARD, bubbleDiameter + 2, bubbles);
                 if (createNewBubble) {
                     bubbles.add(new Bubble(bubbleShoot.getxBub(), bubbleShoot.getyBub(), bubbleShoot.getColorBubbles()));
+
+                    List<Bubble> cluster = findCluster(bubbleShoot);
+                    if (cluster.size() >= 3) {
+                        removeCluster(cluster);
+                        checkFloatingBubbles();
+                    }
 
                     bubbleShoot = new Bubble((WIDTH_BOARD - bubbleDiameter) / 2, HEIGHT_BOARD - bubbleDiameter - 100, null);
                     bubbleShoot.setRandomColor();
@@ -133,7 +189,7 @@ public class Board extends JPanel implements MouseListener, Runnable {
             if (ROW_ADD_INTERVAL == 10) {
                 ROW_ADD_INTERVAL = 0;
                 shooting.stopShooting();
-                addNewRow();
+//                addNewRow();
             }
 
             repaint();
