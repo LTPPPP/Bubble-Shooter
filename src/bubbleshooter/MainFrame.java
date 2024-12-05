@@ -28,7 +28,8 @@ public class MainFrame extends JFrame implements ActionListener {
         setResizable(true);
         setVisible(true);
         setSize(2 * BubbleShooter.WINDOW_SIZE_X - getContentPane().getSize().width,
-                2 * BubbleShooter.WINDOW_SIZE_Y - getContentPane().getSize().height);
+                2 * BubbleShooter.WINDOW_SIZE_Y - getContentPane().getSize().height + 50);
+        setLocationRelativeTo(null); 
     }
 
     public void init() {

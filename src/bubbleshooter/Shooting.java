@@ -193,23 +193,19 @@ public class Shooting implements ActionListener {
         ArrayList<Bubble> neighbours = new ArrayList<>();
         int maxCol = bubbles.get(row).isFull() ? COL_COUNT_FULL : COL_COUNT;
 
-        // Add left neighbor
         if (col > 0) {
             neighbours.add(bubbles.get(row).get(col - 1));
         }
 
-        // Add right neighbor
         if (col < maxCol - 1) {
             neighbours.add(bubbles.get(row).get(col + 1));
         }
 
-        // Add top-left and top neighbors based on row type
         if (row > 0) {
             if (bubbles.get(row).isFull() && col > 0) {
                 neighbours.add(bubbles.get(row - 1).get(col - 1));
             }
             if (!bubbles.get(row).isFull() || bubbles.get(row).isFull()) {
-                // Adjust column access based on row type
                 int topCol = bubbles.get(row).isFull() ? col : col + 1;
                 if (topCol >= 0 && topCol < bubbles.get(row - 1).size()) {
                     neighbours.add(bubbles.get(row - 1).get(topCol));

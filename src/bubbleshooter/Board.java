@@ -36,7 +36,6 @@ public class Board extends JPanel implements
     private Shooting shooting;
     private JLayeredPane lPane;
     private JScrollPane scrollPane;
-    private static final String fileName = "bubble_shooter_hs.dat";
 
     public Board() {
         setLayout(new BorderLayout());
@@ -50,7 +49,7 @@ public class Board extends JPanel implements
         arrow = new Arrow();
 
         lPane = new JLayeredPane();
-        lPane.setBackground(new Color(0, 0, 0, 0));
+        lPane.setBackground(Color.GRAY);
 
         JPanel blur = new JPanel();
         blur.setBackground(new Color(255, 255, 255, 120));
@@ -81,9 +80,8 @@ public class Board extends JPanel implements
     }
 
     ;
-	
 
-	@Override
+    @Override
     public void mouseDragged(MouseEvent arg0) {
         mouseMoved(arg0);
     }
