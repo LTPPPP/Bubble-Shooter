@@ -56,11 +56,7 @@ public class SettingPanel extends JPanel {
 		newGameButton.setActionCommand("NEWGAME");
 		newGameButton.addActionListener(mainFrame);
 
-		stopGameButton = new JButton("Stop game");
-		stopGameButton.setActionCommand("STOPGAME");
-		stopGameButton.addActionListener(mainFrame);
 		buttonPanel.add(newGameButton);
-		buttonPanel.add(stopGameButton);
 
 		lowerPanel.add(rowsPanel);
 		lowerPanel.add(colorPanel);
