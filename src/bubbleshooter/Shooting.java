@@ -23,7 +23,7 @@ public class Shooting implements ActionListener {
     private MainFrame mainFrame;
     private long score;
     private boolean stopped;
-    public int addNewRow = 10;
+    public int addNewRow = 5;
 
     public static final int ROW_COUNT = (int) Math.ceil(BubbleShooter.HEIGHT_BOARD / (2.0 * Bubble.RADIUS));
     public static final int COL_COUNT_FULL = (int) Math.ceil(BubbleShooter.WIDTH_BOARD / (2.0 * Bubble.RADIUS)) - 1;
