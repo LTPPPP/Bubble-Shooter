@@ -336,6 +336,10 @@ public class Shooting implements ActionListener {
         return score;
     }
 
+    public void reset() {
+        stopped = false;
+    }
+
     @Override
     public void actionPerformed(ActionEvent arg0) {
         moving_bubble.move();

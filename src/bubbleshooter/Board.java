@@ -38,9 +38,8 @@ public class Board extends JPanel implements
     private JButton playAgainButton;
     private JButton quitButton;
 
-
     public Board(MainFrame mainFrame) {
-         this.mainFrame = mainFrame;
+        this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
         setPreferredSize(
                 new Dimension(BubbleShooter.WIDTH_BOARD,
@@ -114,8 +113,60 @@ public class Board extends JPanel implements
     }
 
     public void newGame(int row, int color) {
+        // Remove the result panel if it exists
+        if (lPane != null) {
+            remove(lPane);
+        }
+
+        resultPanel = new JPanel();
+        resultPanel.setLayout(new BorderLayout());
+        resultPanel.setBounds(80, 60, BubbleShooter.WIDTH_BOARD - 2 * 80, 185);
+        resultPanel.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+
+        JPanel subNamePanel = new JPanel();
+        subNamePanel.setLayout(new BoxLayout(subNamePanel, BoxLayout.Y_AXIS));
+        subNamePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        resultText = new JLabel("Kecskeeee");
+        resultText.setFont(new Font(resultText.getFont().getName(), Font.ITALIC, 30));
+        resultText.setAlignmentX(CENTER_ALIGNMENT);
+        resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        JLabel please = new JLabel(
+                "<html><div style=\"text-align: center; Fontsize : 2rem;\">You lose, Haha, too noob 😒 😽!!!</html>");
+        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 13));
+        please.setAlignmentX(CENTER_ALIGNMENT);
+        please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        // Recreate buttons panel
+        JPanel buttonsPanel = new JPanel();
+        playAgainButton = new JButton("Play Again");
+        quitButton = new JButton("Quit");
+        playAgainButton.setActionCommand("Play Again");
+        quitButton.setActionCommand("Quit");
+        playAgainButton.addActionListener(mainFrame);
+        quitButton.addActionListener(mainFrame);
+
+        buttonsPanel.add(playAgainButton);
+        buttonsPanel.add(quitButton);
+
+        subNamePanel.add(resultText);
+        subNamePanel.add(please);
+        subNamePanel.add(buttonsPanel);
+        resultPanel.add(subNamePanel, BorderLayout.CENTER);
+
+        // Recreate layered pane
+        lPane = new JLayeredPane();
+        lPane.setBackground(Color.GRAY);
+
+        JPanel blur = new JPanel();
+        blur.setBackground(new Color(255, 255, 255, 120));
+        blur.setBounds(0, 0, BubbleShooter.WIDTH_BOARD, BubbleShooter.HEIGHT_BOARD);
+
+        lPane.add(blur, JLayeredPane.DEFAULT_LAYER);
+
+        // Prepare new game
         shooting = new Shooting(row, color, this);
-        remove(lPane);
         repaint();
     }
 
