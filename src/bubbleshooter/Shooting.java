@@ -160,12 +160,17 @@ public class Shooting implements ActionListener {
             score *= 1.2;
             mainFrame.gameWon(score);
         }
-        for (Bubble b : bubbles.get(ROW_COUNT - 1)) {
+        for (int i = 0; i < bubbles.get(ROW_COUNT - 1).size(); i++) {
+            Bubble b = bubbles.get(ROW_COUNT - 1).get(i);
             if (b.isVisible()) {
+                System.out.println("Game lost - Bubble at last row: "
+                        + "Row=" + (ROW_COUNT - 1)
+                        + ", Column=" + i
+                        + ", Location=" + b.getLocation());
                 stop();
                 score *= 0.8;
                 mainFrame.gameLost(score);
-                break;
+                return; // Thay break bằng return để chắc chắn thoát
             }
         }
     }

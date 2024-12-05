@@ -33,14 +33,17 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     public void init() {
+        leftPanel.displayHighscore(0, true);
     }
 
     public void gameWon(long score) {
         rightPanel.updateScore(score);
+        leftPanel.displayHighscore(score, true);
     }
 
     public void gameLost(long score) {
         rightPanel.updateScore(score);
+        leftPanel.displayHighscore(score, false);
     }
 
     public void updateScore(long score) {

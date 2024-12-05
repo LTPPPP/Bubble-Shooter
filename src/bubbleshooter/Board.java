@@ -3,6 +3,7 @@ package bubbleshooter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
@@ -14,10 +15,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 public class Board extends JPanel implements
         MouseMotionListener, MouseListener, ActionListener {
@@ -27,7 +31,11 @@ public class Board extends JPanel implements
     private JLayeredPane lPane;
     private JScrollPane scrollPane;
 
+    private JPanel resultPanel;
     private JLabel resultText;
+
+    private JButton playAgainButton;
+    private JButton quitButton;
 
     public Board() {
         setLayout(new BorderLayout());
@@ -40,16 +48,61 @@ public class Board extends JPanel implements
         setOpaque(true);
         arrow = new Arrow();
 
+        resultText = new JLabel();
+
         lPane = new JLayeredPane();
         lPane.setBackground(Color.GRAY);
 
         JPanel blur = new JPanel();
         blur.setBackground(new Color(255, 255, 255, 120));
         blur.setBounds(0, 0, BubbleShooter.WIDTH_BOARD, BubbleShooter.HEIGHT_BOARD);
+
+        lPane.add(blur, JLayeredPane.DEFAULT_LAYER);
+
+        resultPanel = new JPanel();
+        resultPanel.setLayout(new BorderLayout());
+        resultPanel.setBounds(80, 60, BubbleShooter.WIDTH_BOARD - 2 * 80, 185);
+        resultPanel.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+
+        JPanel subNamePanel = new JPanel();
+        subNamePanel.setLayout(new BoxLayout(subNamePanel, BoxLayout.Y_AXIS));
+        subNamePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        resultText = new JLabel("Kecskeeee");
+        resultText.setFont(new Font(resultText.getFont().getName(), Font.ITALIC, 30));
+        resultText.setAlignmentX(CENTER_ALIGNMENT);
+        resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        JLabel please = new JLabel(
+                "<html><div style=\"text-align: center; Fontsize : 2rem;\">You lose, Haha, too noob 😒 😽!!!</html>");
+        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 13));
+        please.setAlignmentX(CENTER_ALIGNMENT);
+        please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        JPanel buttonsPanel = new JPanel();
+        playAgainButton = new JButton("Play Again");
+        quitButton = new JButton("Quit");
+
+        // Add action listeners to buttons
+        playAgainButton.addActionListener(this);
+        quitButton.addActionListener(this);
+
+        buttonsPanel.add(playAgainButton);
+        buttonsPanel.add(quitButton);
+
+        subNamePanel.add(resultText);
+        subNamePanel.add(please);
+        subNamePanel.add(buttonsPanel);
+        resultPanel.add(subNamePanel, BorderLayout.CENTER);
     }
 
     public void displayHighscore(long score, boolean win) {
+
         resultText.setText(win ? "You win!" : "You lose");
+        if (score != 0) {
+            lPane.add(resultPanel, JLayeredPane.DRAG_LAYER);
+        }
+        add(lPane);
         repaint();
     }
 
