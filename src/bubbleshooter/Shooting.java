@@ -24,9 +24,10 @@ public class Shooting implements ActionListener {
     private MainFrame mainFrame;
     private long score;
     private boolean stopped;
+    public int addNewRow = 10;
 
     public static final int ROW_COUNT = (int) Math.ceil(BubbleShooter.HEIGHT_BOARD / (2.0 * Bubble.RADIUS));
-    public static final int COL_COUNT_FULL = (int) Math.ceil(BubbleShooter.WIDTH_BOARD / (2.0 * Bubble.RADIUS));
+    public static final int COL_COUNT_FULL = (int) Math.ceil(BubbleShooter.WIDTH_BOARD / (2.0 * Bubble.RADIUS)) - 1;
     public static final int COL_COUNT = COL_COUNT_FULL - 1;
     public static final int SCORE_SHOT = 10;
     public static final int SCORE_COHERENT = 20;
@@ -119,7 +120,7 @@ public class Shooting implements ActionListener {
         int currentPosY = moving_bubble.getCenterLocation().y;
         int row = (currentPosY - Bubble.RADIUS) / (BubbleShooter.ROW_DISTANCE / 2);
         int col;
-        if (row < ROW_COUNT) {
+        if (row < Shooting.ROW_COUNT) {
             if (bubbles.get(row).isFull()) {
                 col = (currentPosX) / ((Bubble.RADIUS + 1) * 2);
             } else {
@@ -150,7 +151,7 @@ public class Shooting implements ActionListener {
         if (removed == 0) {
             shotCount++;
         }
-        if (shotCount == 5) {
+        if (shotCount == addNewRow) {
             shotCount = 0;
             addRow();
         }
@@ -191,45 +192,36 @@ public class Shooting implements ActionListener {
 
     private ArrayList<Bubble> getNeighbours(int row, int col) {
         ArrayList<Bubble> neighbours = new ArrayList<>();
-        int maxCol = bubbles.get(row).isFull() ? COL_COUNT_FULL : COL_COUNT;
-
-        // Add left neighbor
         if (col > 0) {
             neighbours.add(bubbles.get(row).get(col - 1));
         }
-
-        // Add right neighbor
-        if (col < maxCol - 1) {
+        if (col < (bubbles.get(row).isFull() ? COL_COUNT_FULL : COL_COUNT) - 1) {
             neighbours.add(bubbles.get(row).get(col + 1));
         }
-
-        // Add top-left and top neighbors based on row type
-        if (row > 0) {
-            if (bubbles.get(row).isFull() && col > 0) {
-                neighbours.add(bubbles.get(row - 1).get(col - 1));
-            }
-            if (!bubbles.get(row).isFull() || bubbles.get(row).isFull()) {
-                // Adjust column access based on row type
-                int topCol = bubbles.get(row).isFull() ? col : col + 1;
-                if (topCol >= 0 && topCol < bubbles.get(row - 1).size()) {
-                    neighbours.add(bubbles.get(row - 1).get(topCol));
-                }
-            }
+        if (bubbles.get(row).isFull() && col > 0 && row > 0) {
+            neighbours.add(bubbles.get(row - 1).get(col - 1));
         }
-
-        // Add bottom neighbors similarly
-        if (row < ROW_COUNT - 1) {
-            if (bubbles.get(row).isFull() && col > 0) {
-                neighbours.add(bubbles.get(row + 1).get(col - 1));
-            }
-            if (!bubbles.get(row).isFull() || bubbles.get(row).isFull()) {
-                int bottomCol = bubbles.get(row).isFull() ? col : col + 1;
-                if (bottomCol >= 0 && bottomCol < bubbles.get(row + 1).size()) {
-                    neighbours.add(bubbles.get(row + 1).get(bottomCol));
-                }
-            }
+        if (!bubbles.get(row).isFull() && row > 0) {
+            neighbours.add(bubbles.get(row - 1).get(col));
         }
-
+        if (bubbles.get(row).isFull() && col < COL_COUNT_FULL - 1 && row > 0) {
+            neighbours.add(bubbles.get(row - 1).get(col));
+        }
+        if (!bubbles.get(row).isFull() && row > 0) {
+            neighbours.add(bubbles.get(row - 1).get(col + 1));
+        }
+        if (bubbles.get(row).isFull() && col > 0 && row < ROW_COUNT - 1) {
+            neighbours.add(bubbles.get(row + 1).get(col - 1));
+        }
+        if (!bubbles.get(row).isFull() && row < ROW_COUNT - 1) {
+            neighbours.add(bubbles.get(row + 1).get(col));
+        }
+        if (bubbles.get(row).isFull() && col < COL_COUNT_FULL - 1 && row < ROW_COUNT - 1) {
+            neighbours.add(bubbles.get(row + 1).get(col));
+        }
+        if (!bubbles.get(row).isFull() && row < ROW_COUNT - 1) {
+            neighbours.add(bubbles.get(row + 1).get(col + 1));
+        }
         return neighbours;
     }
 
