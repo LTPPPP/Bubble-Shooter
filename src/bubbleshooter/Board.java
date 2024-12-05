@@ -30,6 +30,7 @@ public class Board extends JPanel implements
     private Shooting shooting;
     private JLayeredPane lPane;
     private JScrollPane scrollPane;
+    private MainFrame mainFrame;
 
     private JPanel resultPanel;
     private JLabel resultText;
@@ -37,7 +38,9 @@ public class Board extends JPanel implements
     private JButton playAgainButton;
     private JButton quitButton;
 
-    public Board() {
+
+    public Board(MainFrame mainFrame) {
+         this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
         setPreferredSize(
                 new Dimension(BubbleShooter.WIDTH_BOARD,
@@ -83,9 +86,13 @@ public class Board extends JPanel implements
         playAgainButton = new JButton("Play Again");
         quitButton = new JButton("Quit");
 
-        // Add action listeners to buttons
-        playAgainButton.addActionListener(this);
-        quitButton.addActionListener(this);
+        JPanel buttonPanel = new JPanel();
+        playAgainButton = new JButton("Play Again");
+        quitButton = new JButton("Quit");
+        playAgainButton.setActionCommand("Play Again");
+        quitButton.setActionCommand("Quit");
+        playAgainButton.addActionListener(mainFrame);
+        quitButton.addActionListener(mainFrame);
 
         buttonsPanel.add(playAgainButton);
         buttonsPanel.add(quitButton);

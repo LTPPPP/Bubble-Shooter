@@ -17,7 +17,7 @@ public class MainFrame extends JFrame implements ActionListener {
         rightPanel = new SettingPanel(this);
         rightPanel.initComponents();
 
-        leftPanel = new Board();
+        leftPanel = new Board(this);
 
         add(leftPanel, BorderLayout.WEST);
         add(rightPanel, BorderLayout.CENTER);
@@ -53,12 +53,16 @@ public class MainFrame extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("NEWGAME")) {
+            System.out.println("NEW");
             leftPanel.newGame(rightPanel.getRow(), rightPanel.getColor());
             leftPanel.getGame().setMainFrame(this);
-        } else if (e.getActionCommand().equals("STOPGAME")) {
-            if (leftPanel.getGame() != null) {
-                leftPanel.getGame().stop();
-            }
+        } else if (e.getActionCommand().equals("Quit")) {
+            System.out.println("QUIT");
+            System.exit(0);
+        } else if (e.getActionCommand().equals("Play Again")) {
+            System.out.println("AGAIN");
+            leftPanel.newGame(rightPanel.getRow(), rightPanel.getColor());
+            leftPanel.getGame().setMainFrame(this);
         }
     }
 }
