@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.function.Consumer;
 
 import javax.swing.Timer;
 
@@ -120,7 +119,7 @@ public class Shooting implements ActionListener {
         int currentPosY = moving_bubble.getCenterLocation().y;
         int row = (currentPosY - Bubble.RADIUS) / (BubbleShooter.ROW_DISTANCE / 2);
         int col;
-        if (row < Shooting.ROW_COUNT) {
+        if (row < ROW_COUNT) {
             if (bubbles.get(row).isFull()) {
                 col = (currentPosX) / ((Bubble.RADIUS + 1) * 2);
             } else {

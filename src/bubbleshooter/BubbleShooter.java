@@ -1,11 +1,5 @@
 package bubbleshooter;
 
-import java.awt.*;
-import javax.swing.*;
-import java.awt.GridLayout;
-
-import javax.swing.SwingUtilities;
-
 public class BubbleShooter {
 
     public static final int WIDTH_BOARD = 600;
