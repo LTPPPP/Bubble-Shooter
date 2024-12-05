@@ -88,7 +88,7 @@ public class Bubble {
             case 3:
                 return Color.green;
             case 4:
-                return Color.cyan;
+                return new Color(222, 214, 193);
         }
         return null;
     }

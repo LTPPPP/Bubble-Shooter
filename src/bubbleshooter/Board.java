@@ -71,15 +71,9 @@ public class Board extends JPanel implements
         subNamePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         resultText = new JLabel("Kecskeeee");
-        resultText.setFont(new Font(resultText.getFont().getName(), Font.ITALIC, 30));
+        resultText.setFont(new Font(resultText.getFont().getName(), Font.ITALIC, 60));
         resultText.setAlignmentX(CENTER_ALIGNMENT);
         resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-
-        JLabel please = new JLabel(
-                "<html><div style=\"text-align: center; Fontsize : 2rem;\">You lose, Haha, too noob 😒 😽!!!</html>");
-        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 13));
-        please.setAlignmentX(CENTER_ALIGNMENT);
-        please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
         JPanel buttonsPanel = new JPanel();
         playAgainButton = new JButton("Play Again");
@@ -97,14 +91,18 @@ public class Board extends JPanel implements
         buttonsPanel.add(quitButton);
 
         subNamePanel.add(resultText);
-        subNamePanel.add(please);
         subNamePanel.add(buttonsPanel);
         resultPanel.add(subNamePanel, BorderLayout.CENTER);
     }
 
     public void displayHighscore(long score, boolean win) {
-
-        resultText.setText(win ? "You win!" : "You lose");
+        String result = "";
+        if (win) {
+            result += "You Win : " + score + " point";
+        } else {
+            result += "You lose : " + score + " point";
+        }
+        resultText.setText(result);
         if (score != 0) {
             lPane.add(resultPanel, JLayeredPane.DRAG_LAYER);
         }
@@ -132,10 +130,9 @@ public class Board extends JPanel implements
         resultText.setAlignmentX(CENTER_ALIGNMENT);
         resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
-        JLabel please = new JLabel(
-                "<html><div style=\"text-align: center; Fontsize : 2rem;\">You lose, Haha, too noob 😒 😽!!!</html>");
-        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 13));
-        please.setAlignmentX(CENTER_ALIGNMENT);
+        JLabel please = new JLabel("You lose, Haha, too noob 😒 😽!!!");
+        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 28)); 
+        please.setAlignmentX(CENTER_ALIGNMENT); 
         please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
         // Recreate buttons panel

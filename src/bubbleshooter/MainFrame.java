@@ -1,4 +1,4 @@
-    package bubbleshooter;
+package bubbleshooter;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -54,6 +54,7 @@ public class MainFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("NEWGAME")) {
             System.out.println("NEW");
+            rightPanel.updateScore(0); // Reset score to 0
             leftPanel.newGame(rightPanel.getRow(), rightPanel.getColor());
             leftPanel.getGame().setMainFrame(this);
             leftPanel.getGame().reset();
@@ -62,6 +63,7 @@ public class MainFrame extends JFrame implements ActionListener {
             System.exit(0);
         } else if (e.getActionCommand().equals("Play Again")) {
             System.out.println("AGAIN");
+            rightPanel.updateScore(0); // Reset score to 0
             leftPanel.newGame(rightPanel.getRow(), rightPanel.getColor());
             leftPanel.getGame().setMainFrame(this);
             leftPanel.getGame().reset();
