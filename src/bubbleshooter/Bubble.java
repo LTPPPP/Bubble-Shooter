@@ -80,16 +80,17 @@ public class Bubble {
         int rnd = (int) (bound <= 5 ? Math.random() * bound : Math.random() * 5);
         switch (rnd) {
             case 0:
-                return Color.blue;
+                return new Color(0, 0, 255); 
             case 1:
-                return Color.red;
+                return new Color(255, 0, 0); 
             case 2:
-                return Color.yellow;
+                return new Color(255, 255, 0); 
             case 3:
-                return Color.green;
+                return new Color(0, 255, 0); 
             case 4:
-                return new Color(222, 214, 193);
+                return new Color(222, 214, 193); 
         }
         return null;
     }
+
 }
