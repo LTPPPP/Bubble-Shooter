@@ -9,7 +9,7 @@ public class MovingBubble extends Bubble {
     private double step_y;
     private double point_x;
     private double point_y;
-    private static double STEP = 20;
+    private static double STEP = 5;
 
     public MovingBubble(Bubble b, Point dir) {
         super(b.getColor());

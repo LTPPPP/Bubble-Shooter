@@ -14,6 +14,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,6 +26,8 @@ public class Board extends JPanel implements
     private Shooting shooting;
     private JLayeredPane lPane;
     private JScrollPane scrollPane;
+
+    private JLabel resultText;
 
     public Board() {
         setLayout(new BorderLayout());
@@ -43,6 +46,11 @@ public class Board extends JPanel implements
         JPanel blur = new JPanel();
         blur.setBackground(new Color(255, 255, 255, 120));
         blur.setBounds(0, 0, BubbleShooter.WIDTH_BOARD, BubbleShooter.HEIGHT_BOARD);
+    }
+
+    public void displayHighscore(long score, boolean win) {
+        resultText.setText(win ? "You win!" : "You lose");
+        repaint();
     }
 
     public void newGame(int row, int color) {

@@ -19,8 +19,9 @@ public class SettingPanel extends JPanel {
 	private MainFrame mainFrame;
 	private JLabel scoreLabel;
 	private JPanel lowerPanel;
+        //Default is 5 rows
 	private int rowsSpinner = 5;
-	private int colorSpinner = 4;
+	private int colorSpinner = 5;
 	private JButton newGameButton;
 	private JButton stopGameButton;
 

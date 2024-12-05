@@ -77,7 +77,7 @@ public class Bubble {
     }
 
     public static Color getRandomColor(int bound) {
-        int rnd = (int) (bound <= 8 ? Math.random() * bound : Math.random() * 8);
+        int rnd = (int) (bound <= 5 ? Math.random() * bound : Math.random() * 5);
         switch (rnd) {
             case 0:
                 return Color.blue;
@@ -89,8 +89,6 @@ public class Bubble {
                 return Color.green;
             case 4:
                 return Color.cyan;
-            default:
-                break;
         }
         return null;
     }
