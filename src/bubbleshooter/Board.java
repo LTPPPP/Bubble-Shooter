@@ -96,35 +96,73 @@ public class Board extends JPanel implements
     }
 
     public void displayHighscore(long score, boolean win) {
-        String result = "";
-        if (win) {
-            result += "You Win : " + score + " point";
-        } else {
-            result += "You Lose : " + score + " point";
-        }
+        // Set up a vibrant color scheme
+        Color winColor = new Color(76, 175, 80);    // Bright green for winning
+        Color loseColor = new Color(244, 67, 54);   // Bright red for losing
+
+        // Create a more dynamic result text
+        String result = String.format("%s: %d Points",
+                win ? "Victory" : "Game Over", score);
+
+        // Update result text with new styling
         resultText.setText(result);
+        resultText.setFont(new Font("Arial", Font.BOLD, 20));
+        resultText.setForeground(win ? winColor : loseColor);
 
-        // Optional: Add a specific label for win/lose scenarios
+        // Create an enhanced message label
         JLabel messageLabel = new JLabel();
-        messageLabel.setFont(new Font(messageLabel.getFont().getName(), Font.PLAIN, 20));
+        messageLabel.setFont(new Font("Comic Sans MS", Font.ITALIC, 20));
         messageLabel.setAlignmentX(CENTER_ALIGNMENT);
-        messageLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
+        // Add more expressive and fun messages
         if (win) {
-            messageLabel.setText("Great job! You've won the game! 🎉🏆");
+            messageLabel.setText("Congratulations! You crushed it!");
+            messageLabel.setForeground(winColor.darker());
         } else {
-            messageLabel.setText("You lose, Haha, too noob 😒 😽!!!");
+            messageLabel.setText("Haha you lose, too noobbbbb");
+            messageLabel.setForeground(loseColor.darker());
         }
 
-        // Add the message label to the result panel
-        if (resultPanel != null) {
-            ((JPanel) resultPanel.getComponent(0)).add(messageLabel, 1); // Add after resultText
-        }
+        // Enhance result panel visually
+        resultPanel.setBackground(new Color(255, 255, 255, 200));
+        resultPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(win ? winColor : loseColor, 3),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        ));
 
+        // Add components to the result panel
+        JPanel subNamePanel = (JPanel) resultPanel.getComponent(0);
+        subNamePanel.setOpaque(false);
+
+        // Clear previous components and add new ones
+        subNamePanel.removeAll();
+        subNamePanel.add(resultText);
+        subNamePanel.add(messageLabel);
+
+        // Style buttons
+        playAgainButton.setBackground(new Color(33, 150, 243)); // Blue
+        playAgainButton.setForeground(Color.WHITE);
+        playAgainButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+        quitButton.setBackground(new Color(244, 67, 54)); // Red
+        quitButton.setForeground(Color.WHITE);
+        quitButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setOpaque(false);
+        buttonsPanel.add(playAgainButton);
+        buttonsPanel.add(quitButton);
+
+        subNamePanel.add(buttonsPanel);
+
+        // Add to layered pane
         if (score != 0) {
             lPane.add(resultPanel, JLayeredPane.DRAG_LAYER);
         }
+
         add(lPane);
+        revalidate();
         repaint();
     }
 
@@ -224,12 +262,6 @@ public class Board extends JPanel implements
 
     @Override
     public void mouseExited(MouseEvent arg0) {
-        if (shooting != null) {
-            if (!shooting.isStopped()) {
-                shooting.fire(MouseInfo.getPointerInfo().getLocation(), getLocationOnScreen());
-                repaint();
-            }
-        }
     }
 
     @Override
