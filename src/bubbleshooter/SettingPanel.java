@@ -20,7 +20,7 @@ public class SettingPanel extends JPanel {
     private JLabel scoreLabel;
     private JPanel lowerPanel;
     //Default is 5 rows
-    private int rowsSpinner = 10;
+    private int rowsSpinner = 7;
     private int colorSpinner = 5;
     private JButton newGameButton;
     private JButton stopGameButton;
@@ -68,7 +68,7 @@ public class SettingPanel extends JPanel {
     }
 
     public void updateScore(long score) {
-        scoreLabel.setText((new Long(score).toString()));
+        scoreLabel.setText((Long.toString(score)));
     }
 
     public int getRow() {
