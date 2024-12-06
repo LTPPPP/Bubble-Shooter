@@ -100,9 +100,27 @@ public class Board extends JPanel implements
         if (win) {
             result += "You Win : " + score + " point";
         } else {
-            result += "You lose : " + score + " point";
+            result += "You Lose : " + score + " point";
         }
         resultText.setText(result);
+
+        // Optional: Add a specific label for win/lose scenarios
+        JLabel messageLabel = new JLabel();
+        messageLabel.setFont(new Font(messageLabel.getFont().getName(), Font.PLAIN, 20));
+        messageLabel.setAlignmentX(CENTER_ALIGNMENT);
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+        if (win) {
+            messageLabel.setText("Great job! You've won the game! 🎉🏆");
+        } else {
+            messageLabel.setText("You lose, Haha, too noob 😒 😽!!!");
+        }
+
+        // Add the message label to the result panel
+        if (resultPanel != null) {
+            ((JPanel) resultPanel.getComponent(0)).add(messageLabel, 1); // Add after resultText
+        }
+
         if (score != 0) {
             lPane.add(resultPanel, JLayeredPane.DRAG_LAYER);
         }
@@ -130,11 +148,6 @@ public class Board extends JPanel implements
         resultText.setAlignmentX(CENTER_ALIGNMENT);
         resultText.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
-        JLabel please = new JLabel("You lose, Haha, too noob 😒 😽!!!");
-        please.setFont(new Font(please.getFont().getName(), Font.PLAIN, 28)); 
-        please.setAlignmentX(CENTER_ALIGNMENT); 
-        please.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-
         // Recreate buttons panel
         JPanel buttonsPanel = new JPanel();
         playAgainButton = new JButton("Play Again");
@@ -148,7 +161,6 @@ public class Board extends JPanel implements
         buttonsPanel.add(quitButton);
 
         subNamePanel.add(resultText);
-        subNamePanel.add(please);
         subNamePanel.add(buttonsPanel);
         resultPanel.add(subNamePanel, BorderLayout.CENTER);
 
@@ -204,7 +216,6 @@ public class Board extends JPanel implements
                 repaint();
             }
         }
-
     }
 
     @Override
@@ -213,10 +224,22 @@ public class Board extends JPanel implements
 
     @Override
     public void mouseExited(MouseEvent arg0) {
+        if (shooting != null) {
+            if (!shooting.isStopped()) {
+                shooting.fire(MouseInfo.getPointerInfo().getLocation(), getLocationOnScreen());
+                repaint();
+            }
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent arg0) {
+        if (shooting != null) {
+            if (!shooting.isStopped()) {
+                shooting.fire(MouseInfo.getPointerInfo().getLocation(), getLocationOnScreen());
+                repaint();
+            }
+        }
     }
 
     @Override
